@@ -41,8 +41,6 @@ DEG_wide <- pivot_wider(differentialGenes, # input data frame
 # Take a look at the new, wider structure of the data
 colnames(DEG_wide)
 
-DEG_wide <- DEG_wide[,-c(8,9,16,17)]
-
 # Most intersection plotting functions in R require one of two data structures:
 #   1. A data frame where each group (circle in your venn diagram) is a column 
 #      and the row values are a binary representation of whether a member of the 
