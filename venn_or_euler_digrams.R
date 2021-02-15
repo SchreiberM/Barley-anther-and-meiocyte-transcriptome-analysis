@@ -24,8 +24,8 @@ library(eulerr)
 # load in the 3D RNA seq differential expression statistics data
 differentialGenes <- read.csv("3D_output/DE_gene_testing_statistics.csv")
 
-# We need to convert the data frame from long format (where both genes
-# in the target column and the contrast groups in the contrast column) 
+# We need to convert the data frame from long format (where gene names are 
+# in the target column and the contrast groups are in the contrast column) 
 # to a wider format (where each gene is represented by a single row, 
 # and contrast group scoring statistics are represented as columns)
 
@@ -50,18 +50,14 @@ colnames(DEG_wide)
 #    2. An R list object which contains the names of your groups and its members.
 #
 # In this example we will plot the intersectons of differentially expressed genes
-# between contrast groups. 
+# between contrast groups.
 # 
 # First we will convert the testing statistics (adjusted P value and LFC) to 
 # an indication of whether or not we consider each gene to be differentially 
 # expressed in each contrast group.
 #
 # We will do this with a loop with will iterate over the values in each column
-# representing the adjusted P value. If the value in the column is <0.01 
-# 
-# and return a value of TRUE or FALSE if it meets our cutoffs for differential 
-# expression.
-# 
+# representing the adjusted P value. 
 #
 # The loop below iterate through each adjusted P value column
 # If the value in the column is <0.01 and the corresponding LFC value 
@@ -91,11 +87,14 @@ names(DEG_wide) <- gsub(x = names(DEG_wide), # in the column names in DEG_wide
 
 # This is now ready for input into most of our plotting functions.
 # However, one of our functions requires the R list object format.
-# We can use the format we've prepared above to enerate this.
+#
+# We can use the format we've prepared above to generate this.
+#
 # First, we have to make a vector for each contrast group we want to
-# plot that contains the names of all it's members. Because most venn diagram
+# plot that contains the names of all its members. Because most venn diagram
 # plotting functions preclude groups of more than four we'll just create a list
-# object for each of the anther to anther comparisons. 
+# object for each of the anther to anther comparisons.
+#
 # The code below returns the gene names (DEG_wide$target) if the gene is differentially
 # expressed (indicated as TRUE in DEG_wide as prepared above) in the relevant contrast group
 # column (DEG_wide$`A.LEP.ZYG-A.PRE`).
@@ -129,15 +128,15 @@ IBM <- c("#648FFF",
 
 # Plot a venn diagram with limma.
 # 
-# Limma's vennDiagram funttion lets us plot all five contrast groups.
+# Limma's vennDiagram function lets us plot all five contrast groups.
 vennDiagram(DEG_wide[2:6], # plot columns 2:6
             circle.col = IBM) # use the IBM colour palette
 # This shows a lot of information but is very difficult to read
 
 # Plot a venn diagram with ggvenn.
 #
-# ggvenn allows ven diagram plotting with the popular ggplot2 graphics
-# format. It allows intersects bertween up to four groups to be plotted
+# ggvenn allows venn diagram plotting within the popular ggplot2 graphics
+# format. It allows intersects between up to four groups to be plotted
 ggvenn(DEG_wide,
        setnames[1:3], # plot only the first three contrasts (anther comparisions)
        fill_color = IBM,
@@ -149,7 +148,7 @@ ggvenn(DEG_wide,
 # This is similar to ggvenn, using ggplot2 formatting. However, instead
 # of colouring by group this function colours by the size of the intersection.
 # 
-# This is the one function in this script that uses the R list format data only.
+# This is the one function in this script that accepts the R list format data only.
 # It is also limited to a maximum of four groups.
 ggVennDiagram(x, # use the R list data as input
               category.names = setnames[1:3])
