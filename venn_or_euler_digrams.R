@@ -1,5 +1,5 @@
 # This script can be used to make venn or euler diagrams 
-# form 3D RNAseq output using a number of available R packages.
+# from 3D RNAseq output using a number of available R packages.
 # Part of the publication Schreiber M, Orr J, Barakate A, Waugh R (2021)
 # Barley (Hordeum vulgare) anther and meiocyte RNA sequencing: mapping
 # sequencing reads and downstream data analyses.
