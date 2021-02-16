@@ -193,4 +193,21 @@ upset(sig_DEG_coding,
                           query.name = "non-coding")),
       query.legend = "bottom")
 
-
+# Extracting specific intersections -------------------------------------------
+#
+# Using the binary numerical matrix we prepared to plot this, it is easy to
+# pull out specific intersections.
+#
+# For example, lets extract the 1119 DEGs shared by meiocyte to anther contrast
+# groups.
+# 
+# We can do this using the subset function.
+# Here we want genes that are DE in meiocytes compared to anthers in both
+# contrast groups (column value = 1) but not DE in any other sample.
+# We could specify that the value of all other columns must be == 0 but
+# this is quite lengthy. It's neater to specify that the sum of all rows
+# is equal to 2. 
+meio_DEGs <- subset(sig_DEG, # subset the sig_DEG data frame
+                    `M.LEP.ZYG-A.LEP.ZYG` == 1 & 
+                    `M.PAC.DIP-A.PAC.DIP` == 1 &
+                    total_sig_contrasts == 2)
