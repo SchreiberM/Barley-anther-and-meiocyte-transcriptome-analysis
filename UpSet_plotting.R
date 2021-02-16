@@ -32,8 +32,6 @@ DEG_wide <- pivot_wider(differentialGenes, # input data frame
 # Take a look at the new, wider structure of the data
 colnames(DEG_wide)
 
-DEG_wide <- DEG_wide[,-c(8,9,16,17)]
-
 # UpsetR requires a data frame where each group is a column and the row values
 # are a numerical binary representation of whether a member of the group (genes
 # in our case) are present or absent (1 = present, 0 = absent).
@@ -63,7 +61,7 @@ DEG_wide[1:10,] # print the first ten rows
 # We no longer need the LFC rows so we'll get rid of those
 DEG_wide <- DEG_wide[,1:6] 
 
-# Each column now represents a contrast group we can remove the measurement
+# Each column now represents a contrast group. We can remove the measurement
 # prefix from the column names as it's no longer relevant. We will use the
 # gsub function for this.
 names(DEG_wide) <- gsub(x = names(DEG_wide), # in the column names in DEG_wide
@@ -101,11 +99,12 @@ upset(sig_DEG, # data frame
       sets = setnames, # sets to look for intersects
       keep.order = TRUE) # Keep the order of sets in setnames
 
-# with upset you can add another layer of information by setting the fill of 
-# the bars in the plot by a descriptor value in another column. 
+# With upset you can add or highlight information in the plot by 
+# annotating or colouring different aspects.
 # 
 # As an example we can add the coding status of our genes to the plot
-# like this:
+# by setting the colour of the bars in the histogram above the intersect
+# matrix.
 
 # load in the results of our gene coding status analysis
 codingstat <- read.csv("GeneCodingStatus.csv")
@@ -124,7 +123,7 @@ colnames(sig_DEG)
 
 # Lets change it to BAnTr
 sig_DEG <- rename(sig_DEG, # data frame in which to rename
-                  "BAnTr" = "target") # new name = old name
+                  "BAnTr" = "target") # new column name = old column name
 
 # check that this worked 
 colnames(sig_DEG)
@@ -136,6 +135,7 @@ sig_DEG_coding <- merge(sig_DEG, # data frame 1
 
 # This has created a new data frame which merges both data sets
 colnames(sig_DEG_coding)
+
 # The coding.noncoding column contains the data we want to add to the upset
 # intersect plot. It has three possible values: "coding", "noncoding", and 
 # "undefined".
@@ -167,7 +167,7 @@ IBM <- c("#648FFF",
 # of the bar in the first colour to represent coding genes.
 #
 # Third, we colour only noncoding values leaving the section in between the
-# first and last to represent "undefined" values.
+# first and last colour to represent "undefined" values.
 upset(sig_DEG_coding,
       order.by = "freq",
       sets=setnames,
