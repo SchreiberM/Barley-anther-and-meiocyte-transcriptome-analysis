@@ -56,10 +56,10 @@ colnames(DEG_wide)
 # an indication of whether or not we consider each gene to be differentially 
 # expressed in each contrast group.
 #
-# We will do this with a loop with will iterate over the values in each column
+# We will do this with a loop wich will iterate over the values in each column
 # representing the adjusted P value. 
 #
-# The loop below iterate through each adjusted P value column
+# The loop below iterates through each adjusted P value column.
 # If the value in the column is <0.01 and the corresponding LFC value 
 # (6 columns along; x+6) is > 1 
 # OR (|) 
@@ -115,9 +115,9 @@ x <- list(A.LEP.ZYG_A.PRE,
 # This will save you typing out your group names later. 
 setnames <- colnames(DEG_wide[,2:6])
 
-# Next, choose a colourblind firendly pallette for your figures.
+# Next, choose a colourblind friendly pallette for your figures.
 # This is optional as all plotting functions below have an inbuilt
-# defualt colour pallette. Although most are not colourblind friendly.  
+# default colour pallette. Although most are not colourblind friendly.  
 # This is the IBM pallette recovered from: 
 # https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%23FFB000
 IBM <- c("#648FFF",
