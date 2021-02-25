@@ -1,5 +1,5 @@
 # This script can be used to make venn or euler diagrams 
-# from 3D RNAseq output using a number of available R packages.
+# form 3D RNAseq output using a number of available R packages.
 # Part of the publication Schreiber M, Orr J, Barakate A, Waugh R (2021)
 # Barley (Hordeum vulgare) anther and meiocyte RNA sequencing: mapping
 # sequencing reads and downstream data analyses.
@@ -22,10 +22,10 @@ library(eulerr)
 # that these packages can interpret. 
 
 # load in the 3D RNA seq differential expression statistics data
-differentialGenes <- read.csv("3D_output/DE_gene_testing_statistics.csv")
+differentialGenes <- read.csv("3D output/result/DE transcripts testing statistics.csv")
 
-# We need to convert the data frame from long format (where gene names are 
-# in the target column and the contrast groups are in the contrast column) 
+# We need to convert the data frame from long format (where both genes
+# in the target column and the contrast groups in the contrast column) 
 # to a wider format (where each gene is represented by a single row, 
 # and contrast group scoring statistics are represented as columns)
 
@@ -50,34 +50,31 @@ colnames(DEG_wide)
 #    2. An R list object which contains the names of your groups and its members.
 #
 # In this example we will plot the intersectons of differentially expressed genes
-# between contrast groups.
+# between contrast groups. 
 # 
 # First we will convert the testing statistics (adjusted P value and LFC) to 
 # an indication of whether or not we consider each gene to be differentially 
 # expressed in each contrast group.
 #
-# We will do this with a loop wich will iterate over the values in each column
-# representing the adjusted P value. 
-#
-# The loop below iterates through each adjusted P value column.
+# The loop below iterates through each adjusted P value column (2 to 8)
 # If the value in the column is <0.01 and the corresponding LFC value 
-# (6 columns along; x+6) is > 1 
+# (7 columns along; x+7) is > 1 
 # OR (|) 
 # If the value in the column is <0.01 and the corresponding LFC value
 # is < -1 then the value is replaced with the logical binary value "TRUE".
 # Otherwise, if none of these conditions is met the value is replaced with "FALSE".
-for (x in 2:7) {
-  DEG_wide[,x] <- ifelse(DEG_wide[,x]<0.01 & DEG_wide[,x+6] > 1 |
-                         DEG_wide[,x]<0.01 & DEG_wide[,x+6] < -1, TRUE, FALSE)
+for (x in 2:8) {
+  DEG_wide[,x] <- ifelse(DEG_wide[,x]<0.01 & DEG_wide[,x+7] > 1 |
+                         DEG_wide[,x]<0.01 & DEG_wide[,x+7] < -1, TRUE, FALSE)
 }
 
 # Take a quick look at what this has done
 DEG_wide[1:10,] # print the first ten rows
 
 # We no longer need the LFC rows so we'll get rid of those
-DEG_wide <- DEG_wide[,1:6] # store only rows 1 to 6 (the gene names and one
-                           # column for each of the five contrast groups) in
-                           # the DEG_wide variable.
+# For ease of plotting we'll keep only the five direct anther to anther
+# and anther to meioctye comparisons (columns 1:6)
+DEG_wide <- DEG_wide[,1:6]
 
 # Each column now represents a contrast group we can remove the measurement prefix
 # from the column names as it's no longer relevant. We will use the gsub function for this.
@@ -85,27 +82,30 @@ names(DEG_wide) <- gsub(x = names(DEG_wide), # in the column names in DEG_wide
                         pattern = "adj.pval_", # replace this string in quotes
                         replacement = "") # with nothing ("")
 
+# For our practical reasons the "-" in the contrast column is a nuisance so we'll
+# replace this with "_"
+names(DEG_wide) <- gsub(x = names(DEG_wide), # in the column names in DEG_wide
+                        pattern = "-", # replace this string in quotes
+                        replacement = "_") # with nothing ("")
+
 # This is now ready for input into most of our plotting functions.
 # However, one of our functions requires the R list object format.
-#
-# We can use the format we've prepared above to generate this.
-#
+# We can use the format we've prepared above to enerate this.
 # First, we have to make a vector for each contrast group we want to
-# plot that contains the names of all its members. Because most venn diagram
+# plot that contains the names of all it's members. Because most venn diagram
 # plotting functions preclude groups of more than four we'll just create a list
-# object for each of the anther to anther comparisons.
-#
+# object for each of the anther to anther comparisons. 
 # The code below returns the gene names (DEG_wide$target) if the gene is differentially
 # expressed (indicated as TRUE in DEG_wide as prepared above) in the relevant contrast group
 # column (DEG_wide$`A.LEP.ZYG-A.PRE`).
-A.LEP.ZYG_A.PRE <- DEG_wide$target[DEG_wide$`A.LEP.ZYG-A.PRE`] 
-A.PAC.DIP_A.LEP.ZYG <- DEG_wide$target[DEG_wide$`A.PAC.DIP-A.LEP.ZYG`]
-A.MET.TET_A.PAC.DIP <- DEG_wide$target[DEG_wide$`A.MET.TET-A.PAC.DIP`]
+A.Pre_A.Lep.Zyg <- DEG_wide$target[DEG_wide$A.Pre_A.Lep.Zyg] 
+A.LepZyg_A.PacDip <- DEG_wide$target[DEG_wide$A.Lep.Zyg_A.Pac.Dip]
+A.Pac.Dip_A.Met.Tet <- DEG_wide$target[DEG_wide$A.Pac.Dip_A.Met.Tet]
 
 # These vectors can then be combined as an R list object
-x <- list(A.LEP.ZYG_A.PRE,
-          A.PAC.DIP_A.LEP.ZYG,
-          A.MET.TET_A.PAC.DIP)
+x <- list(A.Pre_A.Lep.Zyg,
+          A.LepZyg_A.PacDip,
+          A.Pac.Dip_A.Met.Tet)
 
 # Plotting Venn diagrams ------------------------------------------------------
 # Now that we have our data in the required format we can try out different 
@@ -115,9 +115,9 @@ x <- list(A.LEP.ZYG_A.PRE,
 # This will save you typing out your group names later. 
 setnames <- colnames(DEG_wide[,2:6])
 
-# Next, choose a colourblind friendly pallette for your figures.
+# Next, choose a colourblind firendly pallette for your figures.
 # This is optional as all plotting functions below have an inbuilt
-# default colour pallette. Although most are not colourblind friendly.  
+# defualt colour pallette. Although most are not colourblind friendly.  
 # This is the IBM pallette recovered from: 
 # https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%23FFB000
 IBM <- c("#648FFF",
@@ -128,30 +128,31 @@ IBM <- c("#648FFF",
 
 # Plot a venn diagram with limma.
 # 
-# Limma's vennDiagram function lets us plot all five contrast groups.
+# Limma's vennDiagram function lets us plot five contrast groups.
 vennDiagram(DEG_wide[2:6], # plot columns 2:6
             circle.col = IBM) # use the IBM colour palette
 # This shows a lot of information but is very difficult to read
 
 # Plot a venn diagram with ggvenn.
 #
-# ggvenn allows venn diagram plotting within the popular ggplot2 graphics
-# format. It allows intersects between up to four groups to be plotted
+# ggvenn allows ven diagram plotting with the popular ggplot2 graphics
+# format. It allows intersects bertween up to four groups to be plotted
 ggvenn(DEG_wide,
-       setnames[1:3], # plot only the first three contrasts (anther comparisions)
-       fill_color = IBM,
-       stroke_size = 0.5, # the thickness of the circle outlines
-       set_name_size = 4) # the size of the text of group labels
+  setnames[1:3], # plot only the first three contrasts (anther comparisions)
+  fill_color = IBM[c(1,3,5)],
+  stroke_size = 0.5, # the thickness of the circle outlines
+  set_name_size = 6, # the size of the text of group labels
+  text_size = 6) # the size of numerical labels
 
 # Plot with ggVennDiagram.
 #
 # This is similar to ggvenn, using ggplot2 formatting. However, instead
 # of colouring by group this function colours by the size of the intersection.
 # 
-# This is the one function in this script that accepts the R list format data only.
+# This is the one function in this script that uses the R list format data only.
 # It is also limited to a maximum of four groups.
 ggVennDiagram(x, # use the R list data as input
-              category.names = setnames[1:3])
+        category.names = setnames[1:3])
 
 # Plot Euler diagrams ---------------------------------------------------------
 #
@@ -166,7 +167,8 @@ ggVennDiagram(x, # use the R list data as input
 vd <- venneuler(DEG_wide[,2:6])
 # Which can then be plotted
 plot(vd, # Using the above list object as input
-     col = IBM)
+     col = IBM,
+     cex = 2)
 # Venneuler has somewhat limited flexibility in the plot format.
 
 # Plot a euler diagram using eulerr 
@@ -176,8 +178,7 @@ plot(vd, # Using the above list object as input
 vd <- euler(DEG_wide[,2:6])
 # Which can then be plotted
 plot(vd,
-     legend = TRUE, # include a figure legend
-     quantities = TRUE, # print the numbers in each group and intersect
-     fills = IBM,
-     alpha = 0.6) # set the fills of the circles to 60% opacity
-
+legend = list(cex = 1.5), # include a figure legend at 1.5x default size
+quantities = list(cex = 1.5), # print the numbers in each group and intersect at 1.5x default size
+fills = IBM,
+alpha = 0.6)
