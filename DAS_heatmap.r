@@ -131,7 +131,8 @@ ggsave(paste(GeneOfInterest,
              sep="_"),
        plot=p3,
        width=4.5,
-       dpi=600)
+       dpi=600,
+       compression="lzw")
 
 # Example of plotting the top 10 differential expressed genes -----------------
 
