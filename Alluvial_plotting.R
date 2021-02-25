@@ -12,7 +12,7 @@ library(ggalluvial) # You will need this to make the alluvial plot
 # that these packages can interpret. 
 
 # load in the 3D RNA seq differential expression statistics data
-differentialGenes <- read.csv("3D_output/DE_gene_testing_statistics.csv")
+differentialGenes <- read.csv("3D output/result/DE gene testing statistics.csv")
 
 # Take a look at how the testing statistics are currently organised
 colnames(differentialGenes)
@@ -60,11 +60,21 @@ differentialGenes$change <- ifelse(differentialGenes$adj.pval < 0.01 &
 # first check the contrast names
 levels(differentialGenes$contrast)
 
+# The "-" in the contrast names is a headache so we'll replace it with 
+# "_"
+differentialGenes$contrast <- gsub("-", # substitute "-"
+                                   "_", # for "_"
+                                   differentialGenes$contrast) # in this column
+
+# the above changes the class of values in this column to "character"
+# we will need to change it back to "factor"
+differentialGenes$contrast <- as.factor(differentialGenes$contrast)
+
 # Then subset the desired groups
 DEG <- subset(differentialGenes, # data frame to subset
-              contrast == 'A.LEP.ZYG-A.PRE' | # rows for this contrast or...
-              contrast == 'A.PAC.DIP-A.LEP.ZYG' | # or...
-              contrast == 'A.MET.TET-A.PAC.DIP')
+              contrast == "A.Pre_A.Lep.Zyg" | # rows for this contrast or...
+              contrast == "A.Lep.Zyg_A.Pac.Dip" | # or...
+              contrast == "A.Pac.Dip_A.Met.Tet")
 
 # Next, we will reduce the genes to those that are differentially expressed in
 # any of these three comparisons only. 
@@ -104,22 +114,24 @@ class(DEG$change)
 DEG$change <- as.factor(DEG$change)
 
 # Look at the default levels of this factor column. 
-print(levels(DEG$change))
+levels(DEG$change)
 
 # Chage the order from "DOWN", "NSD", "UP" to "Up", "NSD", "DOWN"
 DEG$change <- factor(DEG$change,
                      levels(DEG$change)[c(3,2,1)])
 
 # Similarly, we want to plot the contrasts in order of meiotic progression
-# from A.PRE to A.MET.TET
+# from A.Pre to A.Met.Tet
 #
 # We can check and change the order as above.
 #
 # Note that list of levels for this factor will include all the original values
 # of this column, including the ones we have excluded already.
-print(levels(DEG$contrast))
+levels(DEG$contrast)
 DEG$contrast <- factor(DEG$contrast,
-                       levels(DEG$contrast)[c(1,3,2)])
+                       levels(DEG$contrast)[c(6,2,4)])
+
+levels(DEG$contrast)
 
 # All that remains is to make the plot. 
 #
@@ -140,7 +152,8 @@ geom_flow(stat = "alluvium", # plot flow between strata
          lode.guidance = "frontback", # the position of each gene in a strata (lode) is able to move back and forth
          alpha=0.1) + # set the alluvia between strata to 10% opacity
 geom_stratum(alpha=0.5) + # set the strata to 50% opacity
-theme(legend.position = "bottom") + # place the legend at the bottom
+theme(legend.position = "bottom", # place the legend at the bottom
+      text = element_text(size = 20)) + 
 xlab("Comparison") + # label the x axis
 ylab("Differentially Expressed Genes") # label the y axis
 
