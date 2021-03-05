@@ -63,18 +63,18 @@ DEG_wide[1:10,] # print the first ten rows
 # and anther to meioctye comparisons (columns 1:6)
 DEG_wide <- DEG_wide[,1:6] 
 
-# Each column now represents a contrast group we can remove the measurement
+# Each column now represents a contrast group. We can remove the measurement
 # prefix from the column names as it's no longer relevant. We will use the
 # gsub function for this.
 names(DEG_wide) <- gsub(x = names(DEG_wide), # in the column names in DEG_wide
                         pattern = "adj.pval_", # replace this string in quotes
                         replacement = "") # with nothing ("")
 
-# For our practical reasons the "-" in the contrast column is a nuisance so we'll
+# For practical reasons the "-" in the contrast column is a nuisance so we'll
 # replace this with "_"
-names(DEG_wide) <- gsub(x = names(DEG_wide), # in the column names in DEG_wide
-                        pattern = "-", # replace this string in quotes
-                        replacement = "_") # with nothing ("")
+names(DEG_wide) <- gsub(x = names(DEG_wide),
+                        pattern = "-", # replace "-"
+                        replacement = "_") # with "_"
 
 # UpstR cannot cope with rows (here, genes) returning 0 (here, not 
 # differentially expressed) in any group/set.
@@ -84,7 +84,7 @@ DEG_wide$total_sig_contrasts <- rowSums(DEG_wide[,2:6])
 
 # This column can be useful for subsetting particular genes later on. 
 # 
-# For now we can use the subset function to remove genes which are not
+# For now, we can use the subset function to remove genes which are not
 # differentially expressed in any contrast group
 sig_DEG <- subset(DEG_wide, # input data frame
                   total_sig_contrasts > 0) # return only the rows whose value in our new column is > 0
@@ -111,8 +111,8 @@ upset(sig_DEG, # data frame
 # the bars in the plot by a descriptor value in another column. 
 # 
 # As an example we can add the coding status of our genes to the plot
-# load in the results of our gene coding status analysis
-# This file is in the GitHub repositary.
+# Load in the results of our gene coding status analysis
+# This file is in the GitHub repositary
 codingstat <- read.csv("GeneCodingStatus.csv")
 colnames(codingstat)
 
@@ -123,7 +123,7 @@ colnames(codingstat)
 # We can do this using the rename function from dplyr (which is part of the 
 # tidyverse collection of R packages)
 
-# currently the column containg gene names in the DEG data frame is called
+# currently the column containing gene names in the DEG data frame is called
 # "target"
 colnames(sig_DEG)
 
@@ -149,13 +149,15 @@ levels(sig_DEG_coding$coding.noncoding)
 # Next, choose a colourblind firendly pallette.  
 # This is the IBM pallette recovered from: 
 # https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%23FFB000
+#
+# Note that it is only possible to easily distinguish around 7 categorical variables by colour
 IBM <- c("#648FFF",
          "#785EF0",
          "#DC267F",
          "#FE6100",
          "#FFB000")
 
-# now we can add this information to the upset plot
+# Now we can add this information to the upset plot
 # 
 # This is slightly complicated. 
 #
@@ -216,7 +218,7 @@ upset(sig_DEG_coding,
 
 # For example, lets extract the 1119 DEGs shared by meiocyte comparisons
 # 
-# we can do this using the subset function. Here we want genes that are DE in 
+# We can do this using the subset function. Here we want genes that are DE in 
 # meiocytes compared to anthers in both contrast groups (column value = 1)
 # but not DE in any other sample. We could specify that the value of all 
 # other columns must be == 0 but this is quite lengthy. It's neater to 
