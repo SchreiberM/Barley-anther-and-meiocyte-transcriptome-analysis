@@ -149,7 +149,7 @@ GOMerged<- rbind(output1,
                  output2,
                  output3)
 
-# Defining z-score as percentage of signifcant genes in comparison to total terms
+# Defining z-score as percentage of significant genes in comparison to total terms
 # assigned, adjust header and write to a csv output file
 GOResults <- cbind(GOMerged,
                    GOMerged$Significant/GOMerged$Annotated)
